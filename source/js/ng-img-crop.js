@@ -6,6 +6,7 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
     scope: {
       image: '=',
       resultImage: '=',
+      cropRect: '=',
 
       changeOnFly: '=',
       areaType: '@',
@@ -44,6 +45,10 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
         }
       };
 
+      var updateCropRect = function(scope) {
+        scope.cropRect = cropHost.getCropRect();
+      };
+
       // Wrapper to safely exec functions within $apply on a running $digest cycle
       var fnSafeApply=function(fn) {
         return function(){
@@ -70,9 +75,11 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
           if(!!scope.changeOnFly) {
             updateResultImage(scope);
           }
+          updateCropRect(scope);
         }))
         .on('area-move-end area-resize-end image-updated', fnSafeApply(function(scope){
           updateResultImage(scope);
+          updateCropRect(scope);
         }));
 
       // Sync CropHost with Directive's options

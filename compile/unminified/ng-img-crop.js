@@ -2,10 +2,10 @@
  * ngImgCrop v0.3.2
  * https://github.com/alexk111/ngImgCrop
  *
- * Copyright (c) 2014 Alex Kaul
+ * Copyright (c) 2015 Alex Kaul
  * License: MIT
  *
- * Generated at Wednesday, December 3rd, 2014, 3:54:12 PM
+ * Generated at Thursday, February 26th, 2015, 1:40:14 AM
  */
 (function() {
 'use strict';
@@ -1699,6 +1699,16 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
       drawScene();
     };
 
+    this.getCropRect = function() {
+      if(!image || !ctx.canvas) {
+        return null;
+      }
+      var x = (theArea.getX()-theArea.getSize()/2)*(image.width/ctx.canvas.width), 
+          y = (theArea.getY()-theArea.getSize()/2)*(image.height/ctx.canvas.height),
+          size = theArea.getSize()*(image.width/ctx.canvas.width);
+      return [x, y, x + size, y + size];
+    }
+
     /* Life Cycle begins */
 
     // Init Context var
@@ -1763,6 +1773,7 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
     scope: {
       image: '=',
       resultImage: '=',
+      cropRect: '=',
 
       changeOnFly: '=',
       areaType: '@',
@@ -1801,6 +1812,10 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
         }
       };
 
+      var updateCropRect = function(scope) {
+        scope.cropRect = cropHost.getCropRect();
+      };
+
       // Wrapper to safely exec functions within $apply on a running $digest cycle
       var fnSafeApply=function(fn) {
         return function(){
@@ -1827,9 +1842,11 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
           if(!!scope.changeOnFly) {
             updateResultImage(scope);
           }
+          updateCropRect(scope);
         }))
         .on('area-move-end area-resize-end image-updated', fnSafeApply(function(scope){
           updateResultImage(scope);
+          updateCropRect(scope);
         }));
 
       // Sync CropHost with Directive's options
@@ -1876,4 +1893,5 @@ crop.directive('imgCrop', ['$timeout', 'cropHost', 'cropPubSub', function($timeo
     }
   };
 }]);
+
 }());

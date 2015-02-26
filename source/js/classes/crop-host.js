@@ -332,6 +332,16 @@ crop.factory('cropHost', ['$document', 'cropAreaCircle', 'cropAreaSquare', 'crop
       drawScene();
     };
 
+    this.getCropRect = function() {
+      if(!image || !ctx.canvas) {
+        return null;
+      }
+      var x = (theArea.getX()-theArea.getSize()/2)*(image.width/ctx.canvas.width), 
+          y = (theArea.getY()-theArea.getSize()/2)*(image.height/ctx.canvas.height),
+          size = theArea.getSize()*(image.width/ctx.canvas.width);
+      return [x, y, x + size, y + size];
+    }
+
     /* Life Cycle begins */
 
     // Init Context var
